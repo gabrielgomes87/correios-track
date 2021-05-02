@@ -7,10 +7,7 @@ from bs4 import BeautifulSoup
 from discord.ext.commands import Bot
 from discord.ext import commands
 
-
-
 client = discord.Client()
-
 
 @client.event
 async def on_ready():
@@ -18,36 +15,21 @@ async def on_ready():
     activity = discord.Game(name="Temos nosso própio tempo >.<", type=3)
     await client.change_presence(status=discord.Status.idle, activity=activity)
 
-@client.event
-async def get_emote(emote,texto):
-    if "saiu" in texto:
-        emote = ":white_check_mark:"
-    elif "objeto" in texto:
-        emote = ":ballot_box_with_check:"
-
-
 
 @client.event
 async def get_status(codigo):
         try:
             global resposta
             global texto
-            req = requests.post(url="https://www2.correios.com.br/sistemas/rastreamento/ctrl/ctrlRastreamento.cfm?", data={"objetos" : codigo})
+            req = requests.post(url= f"https://www.linkcorreios.com.br/?id={codigo}")
             soup = BeautifulSoup(req.text,'html.parser')
-            texto = soup.find(id='UltimoEvento').strong.text
-            data = soup.find(id='UltimoEvento').text.split()[-1]
-            resposta = f' **{texto}** | Data: **{data}** | Código n°: **{codigo}**'
+            texto = soup.find('ul', {'class': 'linha_status m-0'}).text.replace('trÃ¢nsito', "trânsito").replace('LogÃ­stica', 'Logística').replace('  ', ' ').replace('destinatÃ¡rio', 'destinatário').replace('DistribuiÃ§Ã£o', '**Distribuição**').replace('Origem', ':airplane_departure: **Origem**').replace('Destino', ':airplane_arriving: **Destino**').replace('Data', ':clock1: **Data**').replace('Status', ':page_with_curl: **Status**')
+            resposta = f' {texto}'
+            await channel.send(" **:package: Pacote encontrado:** " + resposta)
             print(resposta) 
         except Exception as e:
             await channel.send(" :x: **Pacote não encontrado, certifique de que o código esteja correto. (Compras internacionais podem demorar para serem registradas).**")
-
-@client.event
-async def send_status(texto):
-    if "entrega" in texto:
-        await channel.send(":white_check_mark:" + resposta)
-    elif "Objeto" in texto:
-        await channel.send(":ballot_box_with_check:" + resposta)
-
+        
 
 @client.event
 async def on_message(message):
@@ -60,6 +42,5 @@ async def on_message(message):
     if message.content.startswith('!c'):
         codigo = message.content.replace("!c ", "")
         await get_status(codigo)
-        await send_status(texto)
 
 client.run('DISCORD API KEY AQUI')
