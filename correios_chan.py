@@ -23,7 +23,7 @@ async def get_status(codigo):
             global texto
             req = requests.post(url= f"https://www.linkcorreios.com.br/?id={codigo}")
             soup = BeautifulSoup(req.text,'html.parser')
-            texto = soup.find('ul', {'class': 'linha_status m-0'}).text.replace('trÃ¢nsito', "trânsito").replace('LogÃ­stica', 'Logística').replace('  ', ' ').replace('destinatÃ¡rio', 'destinatário').replace('DistribuiÃ§Ã£o', '**Distribuição**').replace('Origem', ':airplane_departure: **Origem**').replace('Destino', ':airplane_arriving: **Destino**').replace('Data', ':clock1: **Data**').replace('Status', ':page_with_curl: **Status**')
+            texto = soup.find('ul', {'class': 'linha_status m-0'}).text.replace('trÃ¢nsito', "trânsito").replace('LogÃ­stica', 'Logística').replace('  ', ' ').replace('destinatÃ¡rio', 'destinatário').replace('DistribuiÃ§Ã£o', '**Distribuição**').replace("exportaÃ§Ã£o", "exportação").replace("paÃ­s", "país").replace("PaÃ­s", 'País').replace("Local" , "**:round_pushpin: Local**").replace('Origem', ':airplane_departure: **Origem**').replace('Destino', ':airplane_arriving: **Destino**').replace('Data', ':clock1: **Data**').replace('Status', ':page_with_curl: **Status**')
             resposta = f' {texto}'
             await channel.send(" **:package: Pacote encontrado:** " + resposta)
             print(resposta) 
